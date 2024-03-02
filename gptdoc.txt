@@ -1,0 +1,29 @@
+# Use a base image
+FROM ubuntu:latest
+
+# Set environment variable
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set the working directory
+WORKDIR /home/ubuntu
+COPY backend/ .
+# Update package lists, install dependencies, and set timezone
+RUN apt-get update && \
+    apt-get install -y nodejs npm git curl nginx && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash && \
+    source ~/.nvm/nvm.sh && \
+    nvm install 20 && \
+    nvm use 20 && \
+    npm run build && \
+    npm install pm2 -g && \
+    git clone https://github.com/malikjaid/sites-available.git && \
+    rm -rf /etc/nginx/sites-available && \
+    mv sites-available /etc/nginx/
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Define the entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
