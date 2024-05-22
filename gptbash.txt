@@ -7,3 +7,4 @@ mysql -u root -e "FLUSH PRIVILEGES;"
 npx sequelize-cli db:migrate
 pm2 start --name main.js npm -- start
 service nginx start
+#qDWFEAGRSTHDFGHJ
