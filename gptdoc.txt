@@ -27,3 +27,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Define the entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ #ESFDRGTHJ
