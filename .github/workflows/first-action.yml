@@ -3,7 +3,7 @@ name: Create Pull Request
 on:
   push:
     branches:
-      - junaid
+      - malikt
 
 jobs:
   create_pull_request:
@@ -12,11 +12,40 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Debug - Check repository state before making changes
+        run: |
+          git status
+          git log -1
+          git branch -a
+          git diff origin/main || echo "No diff with origin/main"
+
+      - name: Extract git commit data
+        uses: rlespinasse/git-commit-data-action@v1.x
+
+      - name: Update author information
+        run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
+
+      - name: Debug - Check repository state after making changes
+        run: |
+          cat AUTHOR
+          git status
+          git log -1
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          title: 'Merge junaid into main'
-          body: 'This pull request was automatically created.'
+          branch: malikt
+          base: main  # Update this if your default branch is not `main`
+          title: 'Automatic Pull Request from junaid to main'
+          body: |
+            This pull request was automatically created by a GitHub Action.
+          committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}>
+          author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}>
+          delete-branch: false
